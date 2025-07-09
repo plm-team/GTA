@@ -45,6 +45,18 @@ We evaluated both base and fine-tuned versions across comprehensive benchmarks, 
 | GQA-1B-SFT | 74.31 | 45.52 | 20.58 | 42.42 | 70.45 | 36.09 | 63.57 | 26.26 | 40.89 | 22.01 | 29.76 | 15.80 | 40.64 |
 | GTA-1B-SFT | 74.59 | 45.20 | 19.80 | 45.08 | 71.30 | 39.16 | 65.01 | 26.47 | 41.30 | 25.50 | 36.04 | 16.60 | **42.17** |
 
+### Complexity Analysis
+The table below compares computational complexity and memory requirements across different attention mechanisms. GTA achieves the optimal balance between efficiency and expressivity, with KV cache reduced to `(n_k d_h + n_c d_l)N` and attention computation to `n_q(d_k+d_l)N²`, while maintaining strong expressivity.
+
+| Attention Mechanism | KV Cache per Layer | Computation per Layer - Attention | Computation per Layer - Linear | Expressivity |
+|---------------------|--------------------|------------------------------------|--------------------------------|--------------|
+| **MHA** | $2n_hd_hN$ | $2n_hd_hN^2$ | $4NH^2$ | Strong |
+| **GQA** | $2n_kd_hN$ | $2n_hd_hN^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
+| **MLA** | $(d_c+d_{rope})N$ | $n_h(d_{rope}+2d_{nope})N^2$ | $\Big((d_c+d_{rope})H+n_h(d_{rope}+d_{nope})H+2n_hd_ld_{nope}+H^2\Big)N$ | Strong |
+| **GVA** | $(H+n_kd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
+| **GHA** | $(n_kd_h + n_vd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $NH^2+n_qd_hNH+n_kd_hNH+n_vd_hNH$ | Weak |
+| **GTA (Ours)** | **$(n_kd_h + n_cd_l)N$** | **$n_q(d_k+d_l)N^2$** | **$2NH^2+(n_qd_h+n_kd_h+n_cd_l+d_l)NH$** | **Strong** |
+
 ### Efficiency and Performance Analysis
 We conducted comprehensive efficiency evaluations using LLM-Viewer on NVIDIA H100 GPUs. The analysis reveals that GTA-1B consistently outperforms GQA-1B in both compute-intensive prefill and I/O-intensive decode phases across various sequence lengths and batch sizes. The efficiency gains become more pronounced with longer sequences, demonstrating GTA's superior scalability.
 
@@ -66,48 +78,25 @@ In memory-constrained scenarios requiring GPU-CPU memory transfers, GTA-1B shows
 <img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench_okv.png" width="100%"/>
 </center>
 
-### Complexity Analysis
-The table below compares computational complexity and memory requirements across different attention mechanisms. GTA achieves the optimal balance between efficiency and expressivity, with KV cache reduced to `(n_k d_h + n_c d_l)N` and attention computation to `n_q(d_k+d_l)N²`, while maintaining strong expressivity.
+## 🛠️ LLM Viewer Analysis
 
-| Attention Mechanism | KV Cache per Layer | Computation per Layer - Attention | Computation per Layer - Linear | Expressivity |
-|---------------------|--------------------|------------------------------------|--------------------------------|--------------|
-| **MHA** | $2n_hd_hN$ | $2n_hd_hN^2$ | $4NH^2$ | Strong |
-| **GQA** | $2n_kd_hN$ | $2n_hd_hN^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
-| **MLA** | $(d_c+d_{rope})N$ | $n_h(d_{rope}+2d_{nope})N^2$ | $\Big((d_c+d_{rope})H+n_h(d_{rope}+d_{nope})H+2n_hd_ld_{nope}+H^2\Big)N$ | Strong |
-| **GVA** | $(H+n_kd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
-| **GHA** | $(n_kd_h + n_vd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $NH^2+n_qd_hNH+n_kd_hNH+n_vd_hNH$ | Weak |
-| **GTA (Ours)** | **$(n_kd_h + n_cd_l)N$** | **$n_q(d_k+d_l)N^2$** | **$2NH^2+(n_qd_h+n_kd_h+n_cd_l+d_l)NH$** | **Strong** |
+We provide a comprehensive analysis framework based on [LLM Viewer](https://github.com/hahnyuan/LLM-Viewer) to evaluate the computational efficiency of different attention mechanisms. Our modified implementation is available in the `llm_viewer/` directory.
 
-**Empirical Benchmarks (LLM-Viewer on NVIDIA H100):**
-GTA-1B consistently outperforms GQA-1B in both compute-intensive prefill and I/O-intensive decode phases across different configurations.
+### Usage
+To reproduce the efficiency analysis results:
 
-<center>
-<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/nvidia_H100_analysis.png" width="100%"/>
-</center>
-
-**Real-world Deployment Performance:**
-Tested across diverse hardware platforms (NVIDIA H100/A800, RTX 3060, Apple M2, BCM2712) using transformers library:
-
-- **Prefill Performance**: GTA-1B consistently faster than GQA-1B across all platforms, with advantages increasing for longer sequences
-- **Decode Performance**: Superior performance maintained across all hardware types and generation lengths
-- **Cache Offloading**: Enhanced efficiency gains in I/O-intensive scenarios requiring GPU-CPU memory transfers
-
-<center>
-<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench.png" width="100%"/>
-</center>
-
-<center>
-<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench_okv.png" width="100%"/>
-</center>
-
-GTA-1B's consistent performance advantages across heterogeneous hardware demonstrate its versatility for both server-grade and consumer-level deployments, making it an ideal solution for efficient LLM inference.
+```bash
+cd llm_viewer
+bash cal.sh
+```
 
 
-## 🛠️ LLM viewer analysis
+## 🔮 Future Works
 
-## 🔮 Future works
-
-- [ ] 
+- [ ] **Scaled Training Data Models**: Release GTA models trained on larger datasets via Hugging Face to demonstrate performance at scale
+- [ ] **Multi-Scale Model Family**: Deploy GTA models across different parameter scales (3B, 7B, 13B, 30B+) on Hugging Face for comprehensive evaluation
+- [ ] **Efficient Inference Implementations**: Develop optimized GTA implementations for llama.cpp and vLLM to enable high-performance deployment
+- [ ] **Extended Architecture Support**: Integrate GTA with other model architectures beyond transformer-based LLMs 
 
 ## 🤝 Acknowledgements
 
@@ -132,4 +121,3 @@ If you find **Project GTA** helpful for your research or applications, please ci
       url={https://arxiv.org/abs/2506.17286}, 
 }
 ```
-
