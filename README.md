@@ -1,1 +1,135 @@
-# GTA
+# GTA: Grouped-head latenT Attention
+
+<div align="center">
+<a href='https://arxiv.org/pdf/2506.17286'><img src='https://img.shields.io/badge/Paper-ArXiv-C71585'></a>
+<a><img src="https://img.shields.io/github/stars/plm-team/PLM"></a>
+</div>
+
+## 🚀 Overview
+
+Attention mechanisms drive LLM success but create computational and memory bottlenecks that scale rapidly with sequence length. We observe substantial redundancy in attention: KV cache can be compressed significantly and attention maps across heads show high similarity.
+
+<center>
+    <img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/arch.png" width="100%"/>
+</center>
+
+## 🎯 Key Innovations
+
+### 1. Grouped Shared Attention Matrix
+Traditional Multi-Head Attention (MHA) treats each attention head independently, causing computational redundancy. GTA groups attention heads into clusters (e.g., 4 heads per group) and shares a single attention matrix within each group. This eliminates redundant computations while preserving multi-head expressiveness.
+
+<center>
+    <img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/GTA.png" width="70%"/>
+</center>
+
+### 2. Compressed Latent Value Representation
+GTA compresses all value vectors into a unified low-dimensional latent representation and employs a lightweight WaLU decoder for dynamic reconstruction. This approach generates customized value vectors on-demand for each attention group, achieving 70% memory reduction while preserving individual head expressiveness.
+
+## 📊 Experimental Validation
+
+### Training Dynamics and Convergence
+We trained full 1B parameter models (GTA-1B and GQA-1B) over 50,000 steps to validate GTA's scalability. All training logs and metrics are publicly available on [Wandb](https://wandb.ai/201800202062/GTA/workspace?nw=nwuser201800202062) to ensure experimental transparency and reproducibility. The loss curves below demonstrate that GTA maintains stable convergence with highly matched training trajectories despite using only 30% of GQA's KV cache size. This proves that our efficient attention mechanism doesn't compromise model optimization or final performance.
+
+<center>
+    <img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/curves-1B-2k.png" width="100%"/>
+</center>
+
+### Model Performance Evaluation
+We evaluated both base and fine-tuned versions across comprehensive benchmarks, maintaining identical non-attention parameters for fair comparison. The results show that GTA-1B achieves comparable performance to GQA-1B while requiring significantly fewer resources. Notably, the fine-tuned GTA-1B model (GTA-1B-SFT) outperforms its GQA counterpart with an average improvement of 1.53% across all benchmarks.
+
+| Model | PIQA | HellaS. | LogiQA | SIQA | ARC-e | ARC-c | BoolQ | MathQA | TQA | BBH | IFEval | MBPP | **Avg.** |
+|-------|------|---------|--------|------|-------|-------|-------|--------|-----|-----|--------|------|----------|
+| GQA-1B | 75.03 | 46.46 | 24.42 | 46.26 | 77.02 | 42.58 | 63.89 | 25.56 | 40.48 | 23.01 | 9.90 | 12.80 | **40.62** |
+| GTA-1B | 74.59 | 46.47 | 23.50 | 44.26 | 75.63 | 40.87 | 62.01 | 25.93 | 39.01 | 21.01 | 9.80 | 11.60 | 39.56 |
+| | | | | | | | | | | | | | |
+| GQA-1B-SFT | 74.31 | 45.52 | 20.58 | 42.42 | 70.45 | 36.09 | 63.57 | 26.26 | 40.89 | 22.01 | 29.76 | 15.80 | 40.64 |
+| GTA-1B-SFT | 74.59 | 45.20 | 19.80 | 45.08 | 71.30 | 39.16 | 65.01 | 26.47 | 41.30 | 25.50 | 36.04 | 16.60 | **42.17** |
+
+### Efficiency and Performance Analysis
+We conducted comprehensive efficiency evaluations using LLM-Viewer on NVIDIA H100 GPUs. The analysis reveals that GTA-1B consistently outperforms GQA-1B in both compute-intensive prefill and I/O-intensive decode phases across various sequence lengths and batch sizes. The efficiency gains become more pronounced with longer sequences, demonstrating GTA's superior scalability.
+
+<center>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/nvidia_H100_analysis.png" width="100%"/>
+</center>
+
+### Real-world Deployment Performance
+To validate practical applicability, we tested GTA-1B across diverse hardware platforms (NVIDIA H100/A800, RTX 3060, Apple M2, BCM2712) using the transformers library. The benchmark results show consistent performance advantages across all hardware types, with GTA-1B demonstrating superior prefill and decode performance regardless of the underlying architecture. This hardware-agnostic efficiency makes GTA particularly suitable for both server-grade and consumer-level deployments.
+
+<center>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench.png" width="100%"/>
+</center>
+
+### Cache Offloading Optimization
+In memory-constrained scenarios requiring GPU-CPU memory transfers, GTA-1B shows enhanced efficiency gains. The cache offloading benchmark demonstrates that GTA's reduced KV cache size significantly improves I/O-intensive operations, making it ideal for deployment in resource-limited environments.
+
+<center>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench_okv.png" width="100%"/>
+</center>
+
+### Complexity Analysis
+The table below compares computational complexity and memory requirements across different attention mechanisms. GTA achieves the optimal balance between efficiency and expressivity, with KV cache reduced to `(n_k d_h + n_c d_l)N` and attention computation to `n_q(d_k+d_l)N²`, while maintaining strong expressivity.
+
+| Attention Mechanism | KV Cache per Layer | Computation per Layer - Attention | Computation per Layer - Linear | Expressivity |
+|---------------------|--------------------|------------------------------------|--------------------------------|--------------|
+| **MHA** | $2n_hd_hN$ | $2n_hd_hN^2$ | $4NH^2$ | Strong |
+| **GQA** | $2n_kd_hN$ | $2n_hd_hN^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
+| **MLA** | $(d_c+d_{rope})N$ | $n_h(d_{rope}+2d_{nope})N^2$ | $\Big((d_c+d_{rope})H+n_h(d_{rope}+d_{nope})H+2n_hd_ld_{nope}+H^2\Big)N$ | Strong |
+| **GVA** | $(H+n_kd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
+| **GHA** | $(n_kd_h + n_vd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $NH^2+n_qd_hNH+n_kd_hNH+n_vd_hNH$ | Weak |
+| **GTA (Ours)** | **$(n_kd_h + n_cd_l)N$** | **$n_q(d_k+d_l)N^2$** | **$2NH^2+(n_qd_h+n_kd_h+n_cd_l+d_l)NH$** | **Strong** |
+
+**Empirical Benchmarks (LLM-Viewer on NVIDIA H100):**
+GTA-1B consistently outperforms GQA-1B in both compute-intensive prefill and I/O-intensive decode phases across different configurations.
+
+<center>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/nvidia_H100_analysis.png" width="100%"/>
+</center>
+
+**Real-world Deployment Performance:**
+Tested across diverse hardware platforms (NVIDIA H100/A800, RTX 3060, Apple M2, BCM2712) using transformers library:
+
+- **Prefill Performance**: GTA-1B consistently faster than GQA-1B across all platforms, with advantages increasing for longer sequences
+- **Decode Performance**: Superior performance maintained across all hardware types and generation lengths
+- **Cache Offloading**: Enhanced efficiency gains in I/O-intensive scenarios requiring GPU-CPU memory transfers
+
+<center>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench.png" width="100%"/>
+</center>
+
+<center>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench_okv.png" width="100%"/>
+</center>
+
+GTA-1B's consistent performance advantages across heterogeneous hardware demonstrate its versatility for both server-grade and consumer-level deployments, making it an ideal solution for efficient LLM inference.
+
+
+## 🛠️ LLM viewer analysis
+
+## 🔮 Future works
+
+- [ ] 
+
+## 🤝 Acknowledgements
+
+We acknowledge the ADC of the Hong Kong University of Science and Technology (Guangzhou) for providing essential computing resources. Finally, we extend our deepest appreciation to our team members for their dedication and contributions from January 2025 to the present.
+
+## 📄 License
+The code in this repository is released under the MIT License. 
+Limitations: While we strive to address safety concerns and promote the generation of ethical and lawful text, the probabilistic nature of language models may still produce unforeseen outputs. These may include biased, discriminatory, or otherwise harmful content. Users are advised not to disseminate such material. We disclaim any liability for consequences resulting from the distribution of harmful information.
+
+
+## 📚 Citation
+If you find **Project GTA** helpful for your research or applications, please cite as follows:
+
+```
+@misc{sun2025gtagroupedheadlatentattention,
+      title={GTA: Grouped-head latenT Attention}, 
+      author={Luoyang Sun and Jiwen Jiang and Cheng Deng and Xinjian Wu and Haifeng Zhang and Lei Chen and Lionel Ni and Jun Wang},
+      year={2025},
+      eprint={2506.17286},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2506.17286}, 
+}
+```
+
