@@ -1,0 +1,48 @@
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=1 seqlen=2048 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,2.3G,2.3G,2.3G,5.4M,4756224.0,42.5M,20.7K,2.0G,83.3K,1.9G,42.5M,751.9us
+prefill,4.4T,22.6G,2.3G,11.0G,9215666688.0,42.5M,42.5M,2.1G,171M,1.9G,42.5M,9.1ms
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=1 seqlen=1024 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,2.2G,2.3G,2.3G,4.3M,3650304.0,21.2M,20.7K,2.0G,62.8K,1.9G,21.2M,744.2us
+prefill,2.1T,10.2G,2.3G,4.4G,3475499520.0,21.2M,21.2M,2.0G,64.4M,1.9G,21.2M,3.9ms
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=1 seqlen=512 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,2.1G,2.3G,2.3G,3.8M,3097344.0,10.6M,20.7K,1.9G,52.6K,1.9G,10.6M,740.4us
+prefill,1.0T,5.6G,2.3G,1.9G,1454762496.0,10.6M,10.6M,2.0G,26.9M,1.9G,10.6M,1.9ms
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=1 seqlen=128 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,2.1G,2.3G,2.3G,3.3M,2682624.0,2.7M,20.7K,1.9G,44.9K,1.9G,2.7M,737.6us
+prefill,249G,3.0G,2.3G,424M,310798848.0,2.7M,2.7M,1.9G,5.8M,1.9G,2.7M,975.6us
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=32 seqlen=2048 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,73.9G,3.9G,2.3G,173M,144247296.0,1.4G,664K,3.3G,2.7M,1.9G,1.4G,1.3ms
+prefill,141T,653G,2.3G,353G,294893382144.0,1.4G,1.4G,8.7G,5.5G,1.9G,1.4G,288.3ms
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=32 seqlen=1024 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,70.5G,3.2G,2.3G,138M,108857856.0,679M,664K,2.6G,2.0M,1.9G,679M,1.0ms
+prefill,66.8T,255G,2.3G,140G,111208032768.0,679M,679M,4.7G,2.1G,1.9G,679M,120.6ms
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=32 seqlen=512 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,68.7G,2.8G,2.3G,120M,91163136.0,340M,664K,2.3G,1.7M,1.9G,340M,914.3us
+prefill,32.5T,111G,2.3G,61.0G,46544448000.0,340M,340M,3.1G,862M,1.9G,340M,54.5ms
+
+
+=== ../Llama3.2-gla-1B nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=32 seqlen=128 tp_size=1 ===
+layer_name,OPs,memory_access,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time,memory_consumption,memory_consumption_tmp_act,memory_consumption_weight,memory_consumption_kv_cache
+decode,67.5G,2.5G,2.3G,107M,77892096.0,84.9M,664K,2.0G,1.4M,1.9G,84.9M,822.7us
+prefill,8.0T,25.9G,2.3G,13.6G,9937611264.0,84.9M,84.9M,2.2G,184M,1.9G,84.9M,12.6ms

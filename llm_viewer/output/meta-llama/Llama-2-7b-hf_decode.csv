@@ -1,0 +1,20 @@
+
+
+=== meta-llama/Llama-2-7b-hf nvidia_H100 w_bit=16 a_bit=16 kv_bit=16 batchsize=1 seqlen=2048 tp_size=1 ===
+layer_name,OPs,Access,arithmetic_intensity,performance,bound,load_weight,load_act,store_act,load_kv_cache,store_kv_cache,inference_time
+q_proj,33.6M,33.6MB,1.00,3.1T,memory,33.6MB,8.2KB,8.2KB,0.00B,0.00B,10.9us
+k_proj,33.6M,33.6MB,1.00,3.1T,memory,33.6MB,8.2KB,0.00B,0.00B,8.2KB,10.9us
+v_proj,33.6M,33.6MB,1.00,3.1T,memory,33.6MB,8.2KB,0.00B,0.00B,8.2KB,10.9us
+out_proj,33.6M,33.6MB,1.00,3.1T,memory,33.6MB,8.2KB,8.2KB,0.00B,0.00B,10.9us
+gate_proj,90.2M,90.2MB,1.00,3.1T,memory,90.2MB,8.2KB,22.0KB,0.00B,0.00B,29.4us
+up_proj,90.2M,90.2MB,1.00,3.1T,memory,90.2MB,8.2KB,22.0KB,0.00B,0.00B,29.4us
+down_proj,90.2M,90.2MB,1.00,3.1T,memory,90.2MB,22.0KB,8.2KB,0.00B,0.00B,29.4us
+qk_matmul,16.8M,16.9MB,0.99,3.0T,memory,0.00B,8.2KB,131KB,16.8MB,0.00B,5.5us
+sv_matmul,16.8M,16.9MB,0.99,3.0T,memory,0.00B,131KB,8.2KB,16.8MB,0.00B,5.5us
+softmax,328K,262KB,1.2,3.8T,memory,0.00B,131KB,131KB,0.00B,0.00B,85.3ns
+attn_norm,28.7K,16.4KB,1.8,5.4T,memory,0.00B,8.2KB,8.2KB,0.00B,0.00B,5.3ns
+mlp_norm,28.7K,16.4KB,1.8,5.4T,memory,0.00B,8.2KB,8.2KB,0.00B,0.00B,5.3ns
+attn_add,4.1K,16.4KB,0.25,768G,memory,0.00B,8.2KB,8.2KB,0.00B,0.00B,5.3ns
+mlp_add,4.1K,16.4KB,0.25,768G,memory,0.00B,8.2KB,8.2KB,0.00B,0.00B,5.3ns
+mlp_act,8.2K,24.6KB,0.33,1.0T,memory,0.00B,16.4KB,8.2KB,0.00B,0.00B,8.0ns
+lm_head,131M,262MB,0.50,1.5T,memory,262MB,8.2KB,64.0KB,0.00B,0.00B,85.4us
