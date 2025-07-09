@@ -16,7 +16,7 @@ HARDWARE="nvidia_H100_PCIe"
 
 # Define the base command components
 SCRIPT_PATH="analyze_cli.py"
-MODEL_PATH="./Llama"
+MODEL_PATH="../Llama"
 
 # Outer loop for batch sizes
 for bs in "${BATCH_SIZES[@]}"; do
@@ -44,7 +44,7 @@ done
 
 # Define the base command components
 SCRIPT_PATH="analyze_cli_gla.py"
-MODEL_PATH="./gta"
+MODEL_PATH="../gta"
 
 # Outer loop for batch sizes
 for bs in "${BATCH_SIZES[@]}"; do
