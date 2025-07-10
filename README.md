@@ -2,7 +2,9 @@
 
 <div align="center">
 <a href='https://arxiv.org/pdf/2506.17286'><img src='https://img.shields.io/badge/Paper-ArXiv-C71585'></a>
-<a><img src="https://img.shields.io/github/stars/plm-team/PLM"></a>
+<a href='https://huggingface.co/PLM-Team/GTA-1B-Base'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging Face-Base-red'></a>
+<a href='https://huggingface.co/PLM-Team/GTA-1B-SFT'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging Face-SFT-red'></a>
+<a><img src="https://img.shields.io/github/stars/plm-team/GTA"></a>
 </div>
 
 ## 🚀 Overview
@@ -37,6 +39,8 @@ We trained full 1B parameter models (GTA-1B and GQA-1B) over 50,000 steps to val
 ### Model Performance Evaluation
 We evaluated both base and fine-tuned versions across comprehensive benchmarks, maintaining identical non-attention parameters for fair comparison. The results show that GTA-1B achieves comparable performance to GQA-1B while requiring significantly fewer resources. Notably, the fine-tuned GTA-1B model (GTA-1B-SFT) outperforms its GQA counterpart with an average improvement of 1.53% across all benchmarks.
 
+<small style="white-space: nowrap;">
+
 | Model | PIQA | HellaS. | LogiQA | SIQA | ARC-e | ARC-c | BoolQ | MathQA | TQA | BBH | IFEval | MBPP | **Avg.** |
 |-------|------|---------|--------|------|-------|-------|-------|--------|-----|-----|--------|------|----------|
 | GQA-1B | 75.03 | 46.46 | 24.42 | 46.26 | 77.02 | 42.58 | 63.89 | 25.56 | 40.48 | 23.01 | 9.90 | 12.80 | **40.62** |
@@ -45,8 +49,12 @@ We evaluated both base and fine-tuned versions across comprehensive benchmarks, 
 | GQA-1B-SFT | 74.31 | 45.52 | 20.58 | 42.42 | 70.45 | 36.09 | 63.57 | 26.26 | 40.89 | 22.01 | 29.76 | 15.80 | 40.64 |
 | GTA-1B-SFT | 74.59 | 45.20 | 19.80 | 45.08 | 71.30 | 39.16 | 65.01 | 26.47 | 41.30 | 25.50 | 36.04 | 16.60 | **42.17** |
 
+</small>
+
 ### Complexity Analysis
 The table below compares computational complexity and memory requirements across different attention mechanisms. GTA achieves the optimal balance between efficiency and expressivity, with KV cache reduced to `(n_k d_h + n_c d_l)N` and attention computation to `n_q(d_k+d_l)N²`, while maintaining strong expressivity.
+
+<small style="white-space: nowrap;">
 
 | Attention Mechanism | KV Cache per Layer | Computation per Layer - Attention | Computation per Layer - Linear | Expressivity |
 |---------------------|--------------------|------------------------------------|--------------------------------|--------------|
@@ -56,6 +64,8 @@ The table below compares computational complexity and memory requirements across
 | **GVA** | $(H+n_kd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $2NH^2+2n_kd_hNH$ | Moderate |
 | **GHA** | $(n_kd_h + n_vd_h)N$ | $(n_qd_h+n_hd_h)N^2$ | $NH^2+n_qd_hNH+n_kd_hNH+n_vd_hNH$ | Weak |
 | **GTA (Ours)** | **$(n_kd_h + n_cd_l)N$** | **$n_q(d_k+d_l)N^2$** | **$2NH^2+(n_qd_h+n_kd_h+n_cd_l+d_l)NH$** | **Strong** |
+
+</small>
 
 ### Efficiency and Performance Analysis
 We conducted comprehensive efficiency evaluations using LLM-Viewer on NVIDIA H100 GPUs. The analysis reveals that GTA-1B consistently outperforms GQA-1B in both compute-intensive prefill and I/O-intensive decode phases across various sequence lengths and batch sizes. The efficiency gains become more pronounced with longer sequences, demonstrating GTA's superior scalability.
@@ -96,11 +106,10 @@ bash cal.sh
 - [ ] **Scaled Training Data Models**: Release GTA models trained on larger datasets via Hugging Face to demonstrate performance at scale
 - [ ] **Multi-Scale Model Family**: Deploy GTA models across different parameter scales (3B, 7B, 13B, 30B+) on Hugging Face for comprehensive evaluation
 - [ ] **Efficient Inference Implementations**: Develop optimized GTA implementations for llama.cpp and vLLM to enable high-performance deployment
-- [ ] **Extended Architecture Support**: Integrate GTA with other model architectures beyond transformer-based LLMs 
 
 ## 🤝 Acknowledgements
 
-We acknowledge the ADC of the Hong Kong University of Science and Technology (Guangzhou) for providing essential computing resources. Finally, we extend our deepest appreciation to our team members for their dedication and contributions from January 2025 to the present.
+We extend our deepest appreciation to our team members for their dedication and contributions from January 2025 to the present.
 
 ## 📄 License
 The code in this repository is released under the MIT License. 
