@@ -1,5 +1,6 @@
-# GTA: Grouped-head latenT Attention
-
+<div align="center">
+<h1> GTA: Grouped-head latenT Attention </h1>
+</div>
 <div align="center">
 <a href='https://arxiv.org/pdf/2506.17286'><img src='https://img.shields.io/badge/Paper-ArXiv-C71585'></a>
 <a href='https://huggingface.co/PLM-Team/GTA-1B-Base'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging Face-Base-red'></a>
