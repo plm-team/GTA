@@ -52,8 +52,7 @@ clm_options=" \
 	--do_train \
 
 SCRIPTS="run_clm_run.py"
-run_cmd="torchrun $DISTRIBUTED_ARGS $SCRIPTS
- ${clm_options} ${eval_options}"
+run_cmd="torchrun $DISTRIBUTED_ARGS $SCRIPTS ${clm_options} ${eval_options}"
 
 echo ${run_cmd}
 eval ${run_cmd}
