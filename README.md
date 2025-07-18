@@ -84,7 +84,7 @@ To validate practical applicability, we tested GTA-1B across diverse hardware pl
 In memory-constrained scenarios requiring GPU-CPU memory transfers, GTA-1B shows enhanced efficiency gains. The cache offloading benchmark demonstrates that GTA's reduced KV cache size significantly improves I/O-intensive operations, making it ideal for deployment in resource-limited environments.
 
 <div align="center">
-<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench_okv.png" width="80%"/>
+<img src="https://arxiv.org/html/2506.17286v1/extracted/6532892/images/speed_bench_okv.png" width="60%"/>
 </div>
 
 ## ⚙️ Training Details
