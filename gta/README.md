@@ -11,6 +11,18 @@ DISTRIBUTED_ARGS="
     --rdzv_conf=join_timeout=36000000,read_timeout=3600000,timeout=36000000 \
     "
 
+if [ $EVAL = true ]; then
+    eval_options=" \
+		--per_device_eval_batch_size $EVAL_BS \
+		--do_eval \
+        --evaluation_strategy steps \
+        --max_eval_samples $MAX_EVAL_SAMPLE  \
+        --eval_steps $EVAL_STEP "
+elif [ $EVAL = false ]; then
+    eval_options=" \
+    "
+fi
+
 clm_options=" \
     --train_file $DATA \
     --trust_remote_code true \
@@ -38,7 +50,6 @@ clm_options=" \
     --overwrite_output_dir \
     --output_dir $SAVED_PRETRAIN_CHECKPOINT_PATH \
     --cache_dir $CACHE \
-    --max_eval_samples $MAX_EVAL_SAMPLE \
     --do_train \
 
 SCRIPTS="run_clm_run.py"
