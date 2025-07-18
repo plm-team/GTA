@@ -3,6 +3,8 @@ To reproduce the training curve and performance, you can use the `run_clm.py` pr
 
 ```python
 
+# content of run.sh
+
 DISTRIBUTED_ARGS="
 	--nproc_per_node $GPUS \
 	--nnodes $SLURM_NNODES \
