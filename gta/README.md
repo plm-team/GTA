@@ -14,7 +14,6 @@ DISTRIBUTED_ARGS="
 clm_options=" \
     --train_file $DATA \
     --trust_remote_code true \
-    --attn $ATTN \
     --experiment_id $DATE \
     --report_to wandb \
     --block_size $BLOCK_SIZE \
@@ -39,7 +38,7 @@ clm_options=" \
     --overwrite_output_dir \
     --output_dir $SAVED_PRETRAIN_CHECKPOINT_PATH \
     --cache_dir $CACHE \
-    --max_eval_samples 100 \
+    --max_eval_samples $MAX_EVAL_SAMPLE \
     --do_train \
 
 SCRIPTS="run_clm_run.py"
