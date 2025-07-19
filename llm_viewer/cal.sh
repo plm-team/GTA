@@ -1,76 +1,62 @@
 #!/bin/bash
 
-# --- Configuration ---
-# Define the lists of batch sizes and sequence lengths to iterate over
+# Read user input for model path and hardware
+read -e -p "Enter model path for Llama-GQA (e.g., ../gqa): " MODEL_PATH_CLI
+read -e -p "Enter model path for Llama-GTA (e.g., ../gta): " MODEL_PATH_GTA
+read -p "Enter hardware identifier (e.g., nvidia_H100, nvidia_A100): " HARDWARE
+
 BATCH_SIZES=(1 2 4 8 16 32)
 SEQ_LENS=(128 256 512 1024 2048 4096)
 
-# --- Script Logic ---
 echo "Starting analysis runs..."
 
 PYTHON_EXE="python3"
-# HARDWARE="nvidia_H100"
-# HARDWARE="nvidia_A100_80G"
-HARDWARE="nvidia_H100_PCIe"
-# HARDWARE="nvidia_A100"
 
-# Define the base command components
 SCRIPT_PATH="analyze_cli.py"
-MODEL_PATH="../Llama"
 
-# Outer loop for batch sizes
-for bs in "${BATCH_SIZES[@]}"; do
-  # Inner loop for sequence lengths
-  for sl in "${SEQ_LENS[@]}"; do
-    echo "--------------------------------------------------"
-    echo "Running analysis with Batch Size = $bs and Sequence Length = $sl"
-    echo "--------------------------------------------------"
+if [ -d "$MODEL_PATH_CLI" ]; then
+  for bs in "${BATCH_SIZES[@]}"; do
+    for sl in "${SEQ_LENS[@]}"; do
+      echo "--------------------------------------------------"
+      echo "Running analyze_cli.py with Batch Size = $bs and Sequence Length = $sl"
+      echo "--------------------------------------------------"
 
-    # Construct the full command
-    COMMAND="$PYTHON_EXE $SCRIPT_PATH $MODEL_PATH $HARDWARE --batchsize $bs --seqlen $sl"
+      COMMAND="$PYTHON_EXE $SCRIPT_PATH $MODEL_PATH_CLI $HARDWARE --batchsize $bs --seqlen $sl"
+      echo "Executing: $COMMAND"
+      $COMMAND
 
-    # Print the command being executed (optional)
-    echo "Executing: $COMMAND"
-
-    # Execute the command
-    # 执行命令
-    $COMMAND
-
-    # Add a small delay if needed, e.g., sleep 1
-    echo "Finished run for BS=$bs, SL=$sl."
-    echo "" # Add a blank line for better readability 
+      echo "Finished run for BS=$bs, SL=$sl."
+      echo ""
+    done
   done
-done
+else
+  echo "Model path for analyze_cli.py not found: $MODEL_PATH_CLI"
+  echo "Skipping analyze_cli.py runs..."
+fi
 
-# Define the base command components
-SCRIPT_PATH="analyze_cli_gla.py"
-MODEL_PATH="../gta"
+# Second set of runs with analyze_cli_gta.py
+SCRIPT_PATH="analyze_cli_gta.py"
 
-# Outer loop for batch sizes
-for bs in "${BATCH_SIZES[@]}"; do
-  # Inner loop for sequence lengths
-  for sl in "${SEQ_LENS[@]}"; do
-    echo "--------------------------------------------------"
-    echo "Running analysis with Batch Size = $bs and Sequence Length = $sl"
-    echo "--------------------------------------------------"
+if [ -d "$MODEL_PATH_GTA" ]; then
+  for bs in "${BATCH_SIZES[@]}"; do
+    for sl in "${SEQ_LENS[@]}"; do
+      echo "--------------------------------------------------"
+      echo "Running analyze_cli_gta.py with Batch Size = $bs and Sequence Length = $sl"
+      echo "--------------------------------------------------"
 
-    # Construct the full command
-    COMMAND="$PYTHON_EXE $SCRIPT_PATH $MODEL_PATH $HARDWARE --batchsize $bs --seqlen $sl"
+      COMMAND="$PYTHON_EXE $SCRIPT_PATH $MODEL_PATH_GTA $HARDWARE --batchsize $bs --seqlen $sl"
+      echo "Executing: $COMMAND"
+      $COMMAND
 
-    # Print the command being executed (optional)
-    echo "Executing: $COMMAND"
-
-    # Execute the command
-    $COMMAND
-
-    # Add a small delay if needed, e.g., sleep 1
-    echo "Finished run for BS=$bs, SL=$sl."
-    echo "" # Add a blank line for better readability 
+      echo "Finished run for BS=$bs, SL=$sl."
+      echo ""
+    done
   done
-done
+else
+  echo "Model path for analyze_cli_gta.py not found: $MODEL_PATH_GTA"
+  echo "Skipping analyze_cli_gta.py runs..."
+fi
 
 echo "--------------------------------------------------"
 echo "All analysis runs completed."
 echo "--------------------------------------------------"
-
-# --- End of Script ---
