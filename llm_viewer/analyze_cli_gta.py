@@ -1,4 +1,4 @@
-from model_analyzer_gla import ModelAnalyzer
+from model_analyzer_gta import ModelAnalyzer
 import torch.nn as nn
 import numpy as np
 import os
@@ -47,5 +47,4 @@ results = analyzer.analyze(
     use_flashattention=args.use_flashattention,
     tp_size=args.tp_size
 )
-# print(results)
 analyzer.save_csv()
